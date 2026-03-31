@@ -1,0 +1,23 @@
+Backend
+Admin
+login ->
+is-authorised
+logout ->
+
+Student
+add student -> auth required
+show student -> auth required
+Edit student -> auth required
+Delete Student -> auth required
+->Image upload (del prev if exicts) -> auth required
+
+
+Frontend
+login page
+All Student Data
+Add Student
+Edit Student -> (image upload | Data update)
+
+Db:
+Admin Info -> email | password
+Student Info -> name | gender | image
