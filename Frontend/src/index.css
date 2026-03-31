@@ -1,1 +1,32 @@
 @import "tailwindcss";
+
+@layer components {
+	/* react-data-table-component (RDT) Tailwind alignment */
+	.rdt_Table {
+		@apply !bg-white !text-slate-900;
+	}
+
+	.rdt_TableHead {
+		@apply !bg-slate-100;
+	}
+
+	.rdt_TableHeadRow {
+		@apply !bg-slate-100 !border-b !border-slate-200;
+	}
+
+	.rdt_TableRow {
+		@apply !border-b !border-slate-200;
+	}
+
+	.rdt_TableRow:hover {
+		@apply !bg-slate-50;
+	}
+
+	.rdt_Pagination {
+		@apply !bg-white !text-slate-600 !border-t !border-slate-200;
+	}
+
+	.rdt_Pagination button {
+		@apply !text-slate-700 hover:!bg-slate-100 disabled:!text-slate-300;
+	}
+}
