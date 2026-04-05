@@ -37,22 +37,50 @@ const AllStudent = () => {
     }
 
     const columns = [
-        { 
+        {
             name: "ID",
             selector: row => row._id,
         },
-        { 
+        {
             name: "Name",
             selector: row => row.name,
         },
         {
-            name: "gender",
+            name: "Gender",
             selector: row => row.gender,
+        },
+        {
+            name: "Actions",
+            cell: row => (
+                <>
+                    <button
+                        onClick={() => navigate(`/edit-student/${row._id}`)}
+                        className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700"
+                    >
+                        Edit
+                    </button>
+                    <button
+                        onClick={() => navigate(`/delete-student/${row._id}`)}
+                        className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 ml-2"
+                    >
+                        Delete
+                    </button>
+                </>
+            )
+
         }
     ]
 
     return (
         <div className="w-full max-w-6xl p-4">
+            <div className="mb-4">
+                <button
+                    onClick={() => navigate("/add-student")}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                    Add Student
+                </button>
+            </div>
             {students && students.length > 0 ? (
                 <div className="overflow-hidden rounded-md border border-slate-200 bg-white">
                     <DataTable

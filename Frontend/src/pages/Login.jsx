@@ -1,10 +1,15 @@
-import useCheckAuth from "../hooks/useCheckAuth";
+import axios from "axios";
+import useCheckAuth, { emitAuthChanged } from "../hooks/useCheckAuth";
 import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 
 const Login = () => {
     const isAuth = useCheckAuth();
     const navigate = useNavigate();
+
+    const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
     useEffect(() => {
         if (isAuth === true) {
@@ -12,8 +17,31 @@ const Login = () => {
         }
     }, [isAuth, navigate]);
 
-    if(isAuth === null) {
+    if (isAuth === null) {
         return <p>Checking auth...</p>;
+    }
+
+    const onSubmit = async (data) => {
+        try {
+            const res = await axios.post("http://localhost:5000/api/auth/login", data, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            if (res.status === 401) {
+                throw new Error(res.data.message || "Login failed");
+            } else if (res.data.token) {
+                localStorage.setItem("token", res.data.token);
+                emitAuthChanged();
+                toast.success("Login successful");
+                setTimeout(() => {
+                    navigate("/");
+                }, 2000);
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || error.message || "Login failed");
+        }
+        reset();
     }
 
     return (
@@ -26,18 +54,20 @@ const Login = () => {
                     <p className="text-[15px] mt-6 text-slate-600 leading-relaxed">Immerse yourself in a hassle-free login journey with our intuitively designed login form. Effortlessly access your account.</p>
                     <p className="text-[15px] mt-6 lg:mt-12 text-slate-600">Don't have an account <a href="javascript:void(0);" className="text-blue-600 font-medium hover:underline ml-1">Register here</a></p>
                 </div>
-                <form className="max-w-md lg:ml-auto w-full">
+                <form className="max-w-md lg:ml-auto w-full" onSubmit={handleSubmit(onSubmit)}>
                     <h2 className="text-slate-900 text-3xl font-semibold mb-8">
                         Sign in
                     </h2>
                     <div className="space-y-6">
                         <div>
                             <label className="text-sm text-slate-900 font-medium mb-2 block">Email</label>
-                            <input name="email" type="email" required className="bg-slate-100 w-full text-sm text-slate-900 px-4 py-3 rounded-md outline-0 border border-gray-200 focus:border-blue-600 focus:bg-transparent" placeholder="Enter Email" />
+                            <input name="email" type="email" className="bg-slate-100 w-full text-sm text-slate-900 px-4 py-3 rounded-md outline-0 border border-gray-200 focus:border-blue-600 focus:bg-transparent" placeholder="Enter Email" {...register("email", { required: "Email is required" })} />
+                            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
                         </div>
                         <div>
                             <label className="text-sm text-slate-900 font-medium mb-2 block">Password</label>
-                            <input name="password" type="password" required className="bg-slate-100 w-full text-sm text-slate-900 px-4 py-3 rounded-md outline-0 border border-gray-200 focus:border-blue-600 focus:bg-transparent" placeholder="Enter Password" />
+                            <input name="password" type="password" className="bg-slate-100 w-full text-sm text-slate-900 px-4 py-3 rounded-md outline-0 border border-gray-200 focus:border-blue-600 focus:bg-transparent" placeholder="Enter Password" {...register("password", { required: "Password is required" })} />
+                            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
                         </div>
                         <div className="flex flex-wrap items-center justify-between gap-4">
                             <div className="flex items-center">
@@ -54,7 +84,7 @@ const Login = () => {
                         </div>
                     </div>
                     <div className="mt-12!">
-                        <button type="button" className="w-full shadow-xl py-2.5 px-4 text-[15px] font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none cursor-pointer">
+                        <button type="submit" className="w-full shadow-xl py-2.5 px-4 text-[15px] font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none cursor-pointer">
                             Log in
                         </button>
                     </div>

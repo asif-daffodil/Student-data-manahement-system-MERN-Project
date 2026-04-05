@@ -29,6 +29,16 @@ const getStudents = (req, res) => {
     })
 };
 
+const getStudent = (req, res) => {
+    const studentId = req.params.id;
+    Student.findById(studentId).then(student => {
+        if (!student) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+        res.status(200).json({ student });
+    });
+};
+
 
 const updateStudent = async (req, res) => {
     const studentId = req.params.id;
@@ -85,4 +95,4 @@ const deleteStudent = async (req, res) => {
 };
 
 
-module.exports = { addStudent, getStudents, updateStudent, deleteStudent };
+module.exports = { addStudent, getStudents, getStudent, updateStudent, deleteStudent };
