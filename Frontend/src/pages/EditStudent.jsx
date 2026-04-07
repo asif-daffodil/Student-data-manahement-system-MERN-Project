@@ -2,7 +2,7 @@ import useCheckAuth from "../hooks/useCheckAuth";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { toast } from "react-toastify";
 
 const EditStudent = () => {
@@ -11,7 +11,6 @@ const EditStudent = () => {
     const navigate = useNavigate();
     const [stdData, setStdData] = useState(null);
     const token = localStorage.getItem("token");
-    const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
     const normalizeGender = (value) => {
         if (typeof value !== "string") return "";
@@ -44,14 +43,16 @@ const EditStudent = () => {
         })();
     }, [id, isAuth, token]);
 
+    const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm();
+
     useEffect(() => {
         const student = stdData?.student;
         if (!student) return;
-        reset({
-            name: student.name ?? "",
-            gender: normalizeGender(student.gender),
-        });
-    }, [stdData, reset]);
+
+        setValue("name", student.name ?? "");
+        setValue("gender", normalizeGender(student.gender));
+    }, [stdData, setValue]);
+
 
     const onSubmit = async (data) => {
         const res = await axios.put(`http://localhost:5000/api/students/update-student/${id}`, data, {
@@ -67,29 +68,32 @@ const EditStudent = () => {
         }
     };
 
-    if(stdData === null){
+    if (stdData === null) {
         return <p>Loading student data...</p>;
     }
 
     return (
         <div className="flex items-center justify-center p-4">
             <div className="w-lg mx-auto bg-white rounded-lg shadow-lg p-8">
-                <h1 className="text-3xl font-bold text-gray-800 mb-6">Edit Student {stdData?.student?.name}</h1>
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-3xl font-bold text-gray-800">Edit Student {stdData?.student?.name}</h1>
+                    <Link to="/" className="border rounded-full text-sm px-2">Back</Link>
+                </div>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-2">Name:</label>
-                        <input 
-                            {...register("name", { required: "Name is required" })} 
+                        <input
+                            {...register("name", { required: "Name is required" })}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            placeholder="Enter student name" defaultValue={stdData.student.name}
+                            placeholder="Enter student name"
                         />
                         {errors.name && <span className="text-red-500 text-sm">{errors.name.message}</span>}
                     </div>
                     <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-2">Gender:</label>
-                        <select 
-                            {...register("gender", { required: "Gender is required" })} 
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" defaultValue={stdData.student.gender}
+                        <select
+                            {...register("gender", { required: "Gender is required" })}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         >
                             <option value="">Select gender</option>
                             <option value="Male">Male</option>
@@ -98,8 +102,8 @@ const EditStudent = () => {
                         </select>
                         {errors.gender && <span className="text-red-500 text-sm">{errors.gender.message}</span>}
                     </div>
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition duration-200 mt-6"
                     >
                         Update Student

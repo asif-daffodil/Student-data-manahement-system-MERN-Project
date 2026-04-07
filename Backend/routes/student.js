@@ -6,7 +6,7 @@ const { addStudent, getStudents, getStudent, updateStudent, deleteStudent} = req
 
 router.post('/add-student', isAuthorised, uploadImage.single('image'), addStudent);
 router.get('/get-students', getStudents);
-router.get('/get-student/:id', getStudent);
+router.get('/get-student/:id', isAuthorised, getStudent);
 router.put('/update-student/:id', isAuthorised, uploadImage.single('image'), updateStudent);
 router.delete('/delete-student/:id', isAuthorised, deleteStudent);
 
